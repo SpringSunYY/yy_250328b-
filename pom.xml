@@ -233,6 +233,11 @@
                 <artifactId>scientific-common</artifactId>
                 <version>${scientific.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.lz</groupId>
+                <artifactId>scientific-manage</artifactId>
+                <version>${scientific.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -244,6 +249,7 @@
         <module>scientific-quartz</module>
         <module>scientific-generator</module>
         <module>scientific-common</module>
+        <module>scientific-manage</module>
     </modules>
     <packaging>pom</packaging>
 

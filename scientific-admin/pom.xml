@@ -61,6 +61,11 @@
             <artifactId>scientific-generator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.lz</groupId>
+            <artifactId>scientific-manage</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
