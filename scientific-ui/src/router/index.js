@@ -175,12 +175,26 @@ export const dynamicRoutes = [
         meta: { title: '生成表数据', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/researchSurvey/question',
+    component: Layout,
+    hidden: true,
+    permissions: ['manage:surveyQuestion:list'],
+    children: [
+      {
+        path: 'index/:surveyId(\\d+)',
+        component: () => import('@/views/manage/researchSurvey/question/index'),
+        name: 'ResearchSurveyQuestion',
+        meta: { title: '调研题目', activeMenu: '/scientificManage/researchSurvey' }
+      }
+    ]
   }
 ]
 
 // 防止连续点击多次路由报错
-let routerPush = Router.prototype.push;
-let routerReplace = Router.prototype.replace;
+let routerPush = Router.prototype.push
+let routerReplace = Router.prototype.replace
 // push
 Router.prototype.push = function push(location) {
   return routerPush.call(this, location).catch(err => err)

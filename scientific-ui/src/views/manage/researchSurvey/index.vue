@@ -54,25 +54,25 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-<!--      <el-form-item label="更新人" prop="updatedBy">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.updatedBy"-->
-<!--          placeholder="请输入更新人"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="更新时间">-->
-<!--        <el-date-picker-->
-<!--          v-model="daterangeUpdateTime"-->
-<!--          style="width: 240px"-->
-<!--          value-format="yyyy-MM-dd"-->
-<!--          type="daterange"-->
-<!--          range-separator="-"-->
-<!--          start-placeholder="开始日期"-->
-<!--          end-placeholder="结束日期"-->
-<!--        ></el-date-picker>-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="更新人" prop="updatedBy">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.updatedBy"-->
+      <!--          placeholder="请输入更新人"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="更新时间">-->
+      <!--        <el-date-picker-->
+      <!--          v-model="daterangeUpdateTime"-->
+      <!--          style="width: 240px"-->
+      <!--          value-format="yyyy-MM-dd"-->
+      <!--          type="daterange"-->
+      <!--          range-separator="-"-->
+      <!--          start-placeholder="开始日期"-->
+      <!--          end-placeholder="结束日期"-->
+      <!--        ></el-date-picker>-->
+      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -134,7 +134,13 @@
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
       <el-table-column label="调研标题" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="surveyTitle"
-      />
+      >
+        <template slot-scope="scope">
+          <router-link :to="'/researchSurvey/question/index/' + scope.row.id" class="link-type">
+            <span>{{ scope.row.surveyTitle }}</span>
+          </router-link>
+        </template>
+      </el-table-column>
       <el-table-column label="封面" align="center" v-if="columns[2].visible" prop="coverUrl" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.coverUrl" :width="50" :height="50"/>
@@ -222,12 +228,12 @@
             </el-radio>
           </el-radio-group>
         </el-form-item>
-<!--        <el-form-item label="创建人" prop="userId">-->
-<!--          <el-input v-model="form.userId" placeholder="请输入创建人"/>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="部门" prop="deptId">-->
-<!--          <el-input v-model="form.deptId" placeholder="请输入部门"/>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="创建人" prop="userId">-->
+        <!--          <el-input v-model="form.userId" placeholder="请输入创建人"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="部门" prop="deptId">-->
+        <!--          <el-input v-model="form.deptId" placeholder="请输入部门"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
