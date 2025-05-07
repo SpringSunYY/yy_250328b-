@@ -1,26 +1,17 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-
+    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container"
+               @toggleClick="toggleSideBar"
+    />
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
     <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
-
-        <el-tooltip content="源码地址" effect="dark" placement="bottom">
-          <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
-        <el-tooltip content="文档地址" effect="dark" placement="bottom">
-          <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <screenfull id="screenfull" class="right-menu-item hover-effect"/>
 
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
+          <size-select id="size-select" class="right-menu-item hover-effect"/>
         </el-tooltip>
 
       </template>
@@ -28,7 +19,7 @@
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <i class="el-icon-caret-bottom"/>
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/user/profile">
@@ -56,8 +47,31 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
+import { Notification } from 'element-ui'
+import { listRemindHistory, updateRemindHistory } from '@/api/manage/remindHistory'
 
 export default {
+  data() {
+    return {
+      url: 'ws://101.132.250.226:8080/websocket/message/',
+      message: '',
+      text_content: '',
+      ws: null,
+      remindInfo: {},
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        contractId: null,
+        isRead: '0',
+        remindType: null,
+        remindMessage: null,
+        userId: null,
+        deptId: null,
+        createTime: null
+      }
+    }
+  },
   components: {
     Breadcrumb,
     TopNav,
@@ -91,7 +105,64 @@ export default {
       }
     }
   },
+  mounted() {
+  },
+  created() {
+    this.getRemindInfo()
+  },
   methods: {
+    getRemindInfo() {
+      this.queryParams.userId = this.$store.state.user.id
+      listRemindHistory(this.queryParams).then(res => {
+        for (let remind of res?.rows) {
+          this.notificationInfo(remind)
+        }
+      })
+    },
+    notificationInfo(messageBody) {
+      Notification.info({
+        title: messageBody.content,
+        dangerouslyUseHTMLString: true,
+        // message: messageBody.contents,
+        duration: 0,
+        offset: 40,
+        onClick: function() {
+          //self.warnDetailByWarnid(messageBody.warnId); //自定义回调,message为传的参数
+          // 点击跳转的页面
+          messageBody.isRead = '1'
+          updateRemindHistory(messageBody)
+        },
+        onClose: function() {
+          messageBody.isRead = '1'
+          updateRemindHistory(messageBody)
+        }
+      })
+    },
+    // join() {
+    //
+    // },
+    exit() {
+      if (this.ws) {
+        this.ws.close()
+        this.ws = null
+      }
+    },
+    send() {
+      if (this.ws) {
+        this.ws.send(this.message)
+      } else {
+        alert('未连接到服务器')
+      }
+    },
+    warnDetailByWarnid(warnid) {
+      // 跳转预警详情页面
+      this.$router.push({
+        path: '/XXX/XXX',
+        query: {
+          warnid: warnid
+        }
+      })
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
@@ -102,9 +173,10 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
-          location.href = '/index';
+          location.href = '/index'
         })
-      }).catch(() => {});
+      }).catch(() => {
+      })
     }
   }
 }
@@ -116,7 +188,7 @@ export default {
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
 
   .hamburger-container {
     line-height: 46px;
@@ -124,7 +196,7 @@ export default {
     float: left;
     cursor: pointer;
     transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
       background: rgba(0, 0, 0, .025)

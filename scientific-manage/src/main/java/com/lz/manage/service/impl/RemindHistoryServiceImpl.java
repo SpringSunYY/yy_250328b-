@@ -5,11 +5,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+
+import com.lz.common.core.domain.entity.SysDept;
+import com.lz.common.core.domain.entity.SysUser;
+import com.lz.common.utils.SecurityUtils;
 import com.lz.common.utils.StringUtils;
+
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lz.common.utils.DateUtils;
+
 import javax.annotation.Resource;
+
+import com.lz.system.service.ISysDeptService;
+import com.lz.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -21,92 +31,105 @@ import com.lz.manage.model.vo.remindHistory.RemindHistoryVo;
 
 /**
  * 提醒记录Service业务层处理
- * 
+ *
  * @author ruoyi
  * @date 2025-05-04
  */
 @Service
-public class RemindHistoryServiceImpl extends ServiceImpl<RemindHistoryMapper, RemindHistory> implements IRemindHistoryService
-{
+public class RemindHistoryServiceImpl extends ServiceImpl<RemindHistoryMapper, RemindHistory> implements IRemindHistoryService {
     @Resource
     private RemindHistoryMapper remindHistoryMapper;
 
+    @Resource
+    private ISysDeptService deptService;
+
+    @Resource
+    private ISysUserService userService;
     //region mybatis代码
+
     /**
      * 查询提醒记录
-     * 
+     *
      * @param id 提醒记录主键
      * @return 提醒记录
      */
     @Override
-    public RemindHistory selectRemindHistoryById(Long id)
-    {
+    public RemindHistory selectRemindHistoryById(Long id) {
         return remindHistoryMapper.selectRemindHistoryById(id);
     }
 
     /**
      * 查询提醒记录列表
-     * 
+     *
      * @param remindHistory 提醒记录
      * @return 提醒记录
      */
     @Override
-    public List<RemindHistory> selectRemindHistoryList(RemindHistory remindHistory)
-    {
-        return remindHistoryMapper.selectRemindHistoryList(remindHistory);
+    public List<RemindHistory> selectRemindHistoryList(RemindHistory remindHistory) {
+        List<RemindHistory> remindHistories = remindHistoryMapper.selectRemindHistoryList(remindHistory);
+        for (RemindHistory info : remindHistories) {
+            SysUser user = userService.selectUserById(info.getUserId());
+            if (StringUtils.isNotNull(user)) {
+                info.setUserName(user.getNickName());
+            }
+            SysDept dept = deptService.selectDeptById(info.getDeptId());
+            if (StringUtils.isNotNull(dept)) {
+                info.setDeptName(dept.getDeptName());
+            }
+        }
+        return remindHistories;
     }
 
     /**
      * 新增提醒记录
-     * 
+     *
      * @param remindHistory 提醒记录
      * @return 结果
      */
     @Override
-    public int insertRemindHistory(RemindHistory remindHistory)
-    {
+    public int insertRemindHistory(RemindHistory remindHistory) {
+        remindHistory.setCreateBy(SecurityUtils.getUsername());
+        remindHistory.setIsRead("0");
         remindHistory.setCreateTime(DateUtils.getNowDate());
         return remindHistoryMapper.insertRemindHistory(remindHistory);
     }
 
     /**
      * 修改提醒记录
-     * 
+     *
      * @param remindHistory 提醒记录
      * @return 结果
      */
     @Override
-    public int updateRemindHistory(RemindHistory remindHistory)
-    {
+    public int updateRemindHistory(RemindHistory remindHistory) {
         return remindHistoryMapper.updateRemindHistory(remindHistory);
     }
 
     /**
      * 批量删除提醒记录
-     * 
+     *
      * @param ids 需要删除的提醒记录主键
      * @return 结果
      */
     @Override
-    public int deleteRemindHistoryByIds(Long[] ids)
-    {
+    public int deleteRemindHistoryByIds(Long[] ids) {
         return remindHistoryMapper.deleteRemindHistoryByIds(ids);
     }
 
     /**
      * 删除提醒记录信息
-     * 
+     *
      * @param id 提醒记录主键
      * @return 结果
      */
     @Override
-    public int deleteRemindHistoryById(Long id)
-    {
+    public int deleteRemindHistoryById(Long id) {
         return remindHistoryMapper.deleteRemindHistoryById(id);
     }
+
     //endregion
     @Override
-    public QueryWrapper<RemindHistory> getQueryWrapper(RemindHistoryQuery remindHistoryQuery){
+    public QueryWrapper<RemindHistory> getQueryWrapper(RemindHistoryQuery remindHistoryQuery) {
         QueryWrapper<RemindHistory> queryWrapper = new QueryWrapper<>();
         //如果不使用params可以删除
         Map<String, Object> params = remindHistoryQuery.getParams();
@@ -114,19 +137,19 @@ public class RemindHistoryServiceImpl extends ServiceImpl<RemindHistoryMapper, R
             params = new HashMap<>();
         }
         Long id = remindHistoryQuery.getId();
-        queryWrapper.eq( StringUtils.isNotNull(id),"id",id);
+        queryWrapper.eq(StringUtils.isNotNull(id), "id", id);
 
         Long userId = remindHistoryQuery.getUserId();
-        queryWrapper.eq( StringUtils.isNotNull(userId),"user_id",userId);
+        queryWrapper.eq(StringUtils.isNotNull(userId), "user_id", userId);
 
         String createBy = remindHistoryQuery.getCreateBy();
-        queryWrapper.like(StringUtils.isNotEmpty(createBy) ,"create_by",createBy);
+        queryWrapper.like(StringUtils.isNotEmpty(createBy), "create_by", createBy);
 
         Date createTime = remindHistoryQuery.getCreateTime();
-        queryWrapper.between(StringUtils.isNotNull(params.get("beginCreateTime"))&&StringUtils.isNotNull(params.get("endCreateTime")),"create_time",params.get("beginCreateTime"),params.get("endCreateTime"));
+        queryWrapper.between(StringUtils.isNotNull(params.get("beginCreateTime")) && StringUtils.isNotNull(params.get("endCreateTime")), "create_time", params.get("beginCreateTime"), params.get("endCreateTime"));
 
         String isRead = remindHistoryQuery.getIsRead();
-        queryWrapper.eq(StringUtils.isNotEmpty(isRead) ,"is_read",isRead);
+        queryWrapper.eq(StringUtils.isNotEmpty(isRead), "is_read", isRead);
 
         return queryWrapper;
     }

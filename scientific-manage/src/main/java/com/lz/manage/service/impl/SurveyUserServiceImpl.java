@@ -18,7 +18,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.annotation.Resource;
 
+import com.lz.manage.model.domain.RemindHistory;
 import com.lz.manage.model.domain.ResearchSurvey;
+import com.lz.manage.service.IRemindHistoryService;
 import com.lz.manage.service.IResearchSurveyService;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
@@ -50,6 +52,9 @@ public class SurveyUserServiceImpl extends ServiceImpl<SurveyUserMapper, SurveyU
 
     @Resource
     private ISysUserService userService;
+
+    @Resource
+    private IRemindHistoryService remindHistoryService;
 
     //region mybatis代码
 
@@ -115,6 +120,14 @@ public class SurveyUserServiceImpl extends ServiceImpl<SurveyUserMapper, SurveyU
         }
         surveyUser.setStatus("0");
         surveyUser.setCreateBy(SecurityUtils.getUsername());
+        //发送通知给对应的用户
+        RemindHistory remindHistory = new RemindHistory();
+        remindHistory.setUserId(surveyUser.getUserId());
+        remindHistory.setDeptId(researchSurvey.getDeptId());
+        remindHistory.setContent(StringUtils.format("尊敬的用户：{}，您有一份新的问卷调查：{}，请立即填写",
+                user.getNickName(),
+                researchSurvey.getSurveyTitle()));
+        remindHistoryService.insertRemindHistory(remindHistory);
         return surveyUserMapper.insertSurveyUser(surveyUser);
     }
 
