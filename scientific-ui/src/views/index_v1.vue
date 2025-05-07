@@ -1,31 +1,33 @@
 <template>
   <div class="dashboard-editor-container">
+    <div v-if="!checkPermi(['manage:statics'])">
+      <h1 style="font-size: 36px;text-align: center">科研项目管理系统</h1>
+    </div>
+    <div v-else>
+      <panel-group @handleSetLineChartData="handleSetLineChartData"/>
 
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+        <line-chart :chart-data="lineChartData"/>
+      </el-row>
 
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
-    </el-row>
-
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <bar-chart />
-        </div>
-      </el-col>
-    </el-row>
-
-    
+      <el-row :gutter="32">
+        <el-col :xs="24" :sm="24" :lg="8">
+          <div class="chart-wrapper">
+            <raddar-chart/>
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="24" :lg="8">
+          <div class="chart-wrapper">
+            <pie-chart/>
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="24" :lg="8">
+          <div class="chart-wrapper">
+            <bar-chart/>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
@@ -35,6 +37,7 @@ import LineChart from './dashboard/LineChart'
 import RaddarChart from './dashboard/RaddarChart'
 import PieChart from './dashboard/PieChart'
 import BarChart from './dashboard/BarChart'
+import { checkPermi } from '@/utils/permission'
 
 const lineChartData = {
   newVisitis: {
@@ -70,6 +73,7 @@ export default {
     }
   },
   methods: {
+    checkPermi,
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
     }
@@ -90,7 +94,7 @@ export default {
   }
 }
 
-@media (max-width:1024px) {
+@media (max-width: 1024px) {
   .chart-wrapper {
     padding: 8px;
   }
