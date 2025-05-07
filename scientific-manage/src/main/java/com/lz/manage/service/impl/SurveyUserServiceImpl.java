@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
@@ -75,6 +76,7 @@ public class SurveyUserServiceImpl extends ServiceImpl<SurveyUserMapper, SurveyU
      * @param surveyUser 用户调研
      * @return 用户调研
      */
+    @DataScope(userAlias = "tb_survey_user", deptAlias = "tb_survey_user")
     @Override
     public List<SurveyUser> selectSurveyUserList(SurveyUser surveyUser) {
         List<SurveyUser> surveyUsers = surveyUserMapper.selectSurveyUserList(surveyUser);

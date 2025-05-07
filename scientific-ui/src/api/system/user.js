@@ -10,6 +10,14 @@ export function listUser(query) {
   })
 }
 
+export function listUserNoStrainer(query) {
+  return request({
+    url: '/system/user/list/noStrainer',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询用户详细
 export function getUser(userId) {
   return request({

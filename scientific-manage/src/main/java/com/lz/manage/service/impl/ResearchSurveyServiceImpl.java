@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.utils.SecurityUtils;
@@ -65,6 +66,7 @@ public class ResearchSurveyServiceImpl extends ServiceImpl<ResearchSurveyMapper,
      * @param researchSurvey 调研信息
      * @return 调研信息
      */
+    @DataScope(userAlias = "tb_research_survey", deptAlias = "tb_research_survey")
     @Override
     public List<ResearchSurvey> selectResearchSurveyList(ResearchSurvey researchSurvey) {
         List<ResearchSurvey> researchSurveys = researchSurveyMapper.selectResearchSurveyList(researchSurvey);

@@ -320,9 +320,9 @@
 </template>
 
 <script>
-import { listSurveyUser, getSurveyUser, delSurveyUser, addSurveyUser, updateSurveyUser } from '@/api/manage/surveyUser'
+import { addSurveyUser, delSurveyUser, getSurveyUser, listSurveyUser, updateSurveyUser } from '@/api/manage/surveyUser'
 import { checkPermi } from '@/utils/permission'
-import { listUser } from '@/api/system/user'
+import { listUserNoStrainer } from '@/api/system/user'
 import { listResearchSurvey } from '@/api/manage/researchSurvey'
 
 export default {
@@ -497,7 +497,7 @@ export default {
       if (this.userServiceQueryParams.userName != null) {
         this.userServiceQueryParams.userId = null
       }
-      listUser(this.userServiceQueryParams).then(res => {
+      listUserNoStrainer(this.userServiceQueryParams).then(res => {
         this.userServiceList = res.rows
         this.userServiceLoading = false
       })

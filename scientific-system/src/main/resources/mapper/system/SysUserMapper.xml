@@ -202,7 +202,7 @@
         <if test="sex != null and sex != ''">sex,</if>
         <if test="age != null">age,</if>
         <if test="height != null">height,</if>
-        <if test="weight != null and">weight,</if>
+        <if test="weight != null">weight,</if>
         <if test="password != null and password != ''">password,</if>
         <if test="status != null and status != ''">status,</if>
         <if test="createBy != null and createBy != ''">create_by,</if>
@@ -219,7 +219,7 @@
         <if test="sex != null">#{sex},</if>
         <if test="age != null">#{age},</if>
         <if test="height != null">#{height},</if>
-        <if test="weight != null and weight != ''">#{weight},</if>
+        <if test="weight != null">#{weight},</if>
         <if test="password != null and password != ''">#{password},</if>
         <if test="status != null and status != ''">#{status},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>

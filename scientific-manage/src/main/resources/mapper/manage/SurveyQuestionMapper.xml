@@ -48,6 +48,8 @@
                 and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
             </if>
             <if test="isRequired != null  and isRequired != ''">and is_required = #{isRequired}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
         </where>
         order by question_order asc
     </select>

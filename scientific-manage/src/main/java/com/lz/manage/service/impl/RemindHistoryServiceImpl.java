@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysDept;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.utils.SecurityUtils;
@@ -64,6 +65,7 @@ public class RemindHistoryServiceImpl extends ServiceImpl<RemindHistoryMapper, R
      * @param remindHistory 提醒记录
      * @return 提醒记录
      */
+    @DataScope(userAlias = "tb_remind_history", deptAlias = "tb_remind_history")
     @Override
     public List<RemindHistory> selectRemindHistoryList(RemindHistory remindHistory) {
         List<RemindHistory> remindHistories = remindHistoryMapper.selectRemindHistoryList(remindHistory);
