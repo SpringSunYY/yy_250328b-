@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+  <el-form ref="form" :model="form" :rules="rules" label-width="90px">
     <el-form-item label="用户昵称" prop="nickName">
       <el-input v-model="form.nickName" maxlength="30"/>
     </el-form-item>
@@ -15,13 +15,13 @@
         <el-radio label="1">女</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="年龄">
+    <el-form-item label="年龄" prop="age">
       <el-input-number :min="0" :max="120" v-model="form.age" placeholder="请输入年龄" maxlength="30"/>
     </el-form-item>
-    <el-form-item label="体重(KG)">
+    <el-form-item label="体重(KG)" prop="weight">
       <el-input-number :min="0" :max="200" :percision="2" v-model="form.weight" placeholder="请输入体重"/>
     </el-form-item>
-    <el-form-item label="身高(CM)">
+    <el-form-item label="身高(CM)" prop="height">
       <el-input-number :min="0" :max="200" :percision="2" v-model="form.height" placeholder="请输入身高"/>
     </el-form-item>
     <el-form-item>
