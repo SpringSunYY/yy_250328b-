@@ -7,23 +7,18 @@
       <panel-group @handleSetLineChartData="handleSetLineChartData"/>
 
       <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-        <line-chart :chart-data="lineChartData"/>
+        <my-line-chart :chart-data="loginCount" name="每日登录"/>
       </el-row>
 
-      <el-row :gutter="32">
-        <el-col :xs="24" :sm="24" :lg="8">
+      <el-row :gutter="24">
+        <el-col :xs="24" :sm="24" :lg="12">
           <div class="chart-wrapper">
-            <raddar-chart/>
+            <pie-chart :chart-data="userSexCount" chart-name="性别比例"/>
           </div>
         </el-col>
-        <el-col :xs="24" :sm="24" :lg="8">
+        <el-col :xs="24" :sm="24" :lg="12">
           <div class="chart-wrapper">
-            <pie-chart/>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="24" :lg="8">
-          <div class="chart-wrapper">
-            <bar-chart/>
+            <my-only-bar-chart :bar-data="userAgeCount" bar-name="年龄段"/>
           </div>
         </el-col>
       </el-row>
@@ -38,29 +33,15 @@ import RaddarChart from './dashboard/RaddarChart'
 import PieChart from './dashboard/PieChart'
 import BarChart from './dashboard/BarChart'
 import { checkPermi } from '@/utils/permission'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
+import MyLineChart from '@/views/dashboard/MyLineChart.vue'
+import MyOnlyBarChart from '@/views/dashboard/MyOnlyBarChart.vue'
+import { loginCount, loginCountDay, userAge, userSexPie } from '@/api/manage/statics'
 
 export default {
   name: 'Index',
   components: {
+    MyOnlyBarChart,
+    MyLineChart,
     PanelGroup,
     LineChart,
     RaddarChart,
@@ -69,8 +50,21 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      loginCount: {},
+      userSexCount: [],
+      userAgeCount: {}
     }
+  },
+  created() {
+    loginCountDay().then(response => {
+      this.loginCount = response.data
+    })
+    userSexPie().then(response => {
+      this.userSexCount = response.data.datas
+    })
+    userAge().then(response => {
+      this.userAgeCount = response.data
+    })
   },
   methods: {
     checkPermi,

@@ -29,7 +29,18 @@ export default {
     },
     chartData: {
       type: Object,
-      required: true
+      required: true,
+      default() {
+        return {
+          names: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+          totals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+        }
+      }
+    },
+    name: {
+      type: String,
+      default: '',
+      required: false
     }
   },
   data() {
@@ -42,6 +53,7 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val)
+        console.log(val)
       }
     }
   },
@@ -62,21 +74,19 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData)
     },
-    setOptions({ expectedData, actualData } = {}) {
+    setOptions({ names, totals } = {}) {
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          type: 'category',
+          data: names,
           boundaryGap: false,
           axisTick: {
             show: false
-          },
-          alignTicks: true,
-          min: 0,
-          max: 20000,
+          }
         },
         grid: {
-          left: 10,
-          right: 10,
+          left: '5%',  // 增加左侧空白
+          right: '5%', // 增加右侧空白
           bottom: 20,
           top: 30,
           containLabel: true
@@ -94,44 +104,25 @@ export default {
           }
         },
         legend: {
-          data: ['expected', 'actual']
+          data: [this.name]
         },
         series: [{
-          name: 'expected', itemStyle: {
-
-            color: '#FF005A',
-            lineStyle: {
+          name: this.name, itemStyle: {
+            normal: {
               color: '#FF005A',
-              width: 2
-
+              lineStyle: {
+                color: '#FF005A',
+                width: 2
+              }
             }
           },
           smooth: true,
           type: 'line',
-          data: expectedData,
+          data: totals,
           animationDuration: 2800,
           animationEasing: 'cubicInOut'
-        },
-          {
-            name: 'actual',
-            smooth: true,
-            type: 'line',
-            itemStyle: {
-
-              color: '#3888fa',
-              lineStyle: {
-                color: '#3888fa',
-                width: 2
-              },
-              areaStyle: {
-                color: '#f3f8ff'
-              }
-
-            },
-            data: actualData,
-            animationDuration: 2800,
-            animationEasing: 'quadraticOut'
-          }]
+        }
+        ]
       })
     }
   }
