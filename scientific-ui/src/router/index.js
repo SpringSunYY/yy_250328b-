@@ -189,6 +189,20 @@ export const dynamicRoutes = [
         meta: { title: '调研题目', activeMenu: '/scientificManage/researchSurvey' }
       }
     ]
+  },
+  {
+    path: '/researchSurvey/answer',
+    component: Layout,
+    hidden: true,
+    permissions: ['manage:surveyUser:list'],
+    children: [
+      {
+        path: 'index/:surveyId(\\d+)',
+        component: () => import('@/views/manage/researchSurvey/answerSurvey/index'),
+        name: 'ResearchSurveyAnswer',
+        meta: { title: '调研题目', activeMenu: '/scientificManage/surveyAnswer' }
+      }
+    ]
   }
 ]
 

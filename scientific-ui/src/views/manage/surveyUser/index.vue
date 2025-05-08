@@ -167,7 +167,13 @@
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
       <el-table-column label="答卷" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
                        prop="surveyName"
-      />
+      >
+        <template slot-scope="scope">
+          <router-link :to="'/researchSurvey/answer/index/' + scope.row.id" class="link-type">
+            <span>{{ scope.row.surveyName }}</span>
+          </router-link>
+        </template>
+      </el-table-column>
       <el-table-column label="用户" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible"
                        prop="userName"
       />
