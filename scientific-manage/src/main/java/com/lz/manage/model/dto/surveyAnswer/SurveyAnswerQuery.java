@@ -31,6 +31,9 @@ public class SurveyAnswerQuery implements Serializable
     /** 题目 */
     private Long questionId;
 
+    private Long surveyUserId;
+
+
     /** 题目类型 */
     private String questionType;
 

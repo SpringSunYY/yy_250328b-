@@ -2,6 +2,7 @@ package com.lz.manage.service;
 
 import java.util.List;
 import com.lz.manage.model.domain.SurveyAnswer;
+import com.lz.manage.model.dto.surveyAnswer.SurveyAnswerRequest;
 import com.lz.manage.model.vo.surveyAnswer.SurveyAnswerVo;
 import com.lz.manage.model.dto.surveyAnswer.SurveyAnswerQuery;
 
@@ -79,4 +80,14 @@ public interface ISurveyAnswerService extends IService<SurveyAnswer>
      * @return SurveyAnswerVO集合
      */
     List<SurveyAnswerVo> convertVoList(List<SurveyAnswer> surveyAnswerList);
+
+    /**
+     * 批量插入用户答题记录
+     * @author YY
+     * @method  insertSurveyAnswerList
+     * @date  2025/5/8 20:55
+     * @param surveyAnswerRequest
+     * @return int
+     **/
+    int insertSurveyAnswerList(SurveyAnswerRequest surveyAnswerRequest);
 }

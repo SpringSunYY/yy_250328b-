@@ -74,79 +74,80 @@
 </template>
 
 <script>
+import { addByAnswerList, getSurveyAnswer, listSurveyAnswer } from '@/api/manage/surveyAnswer'
+import { getSurveyUser } from '@/api/manage/surveyUser'
+import { getResearchSurvey } from '@/api/manage/researchSurvey'
+import { listSurveyQuestion } from '@/api/manage/surveyQuestion'
+
 export default {
   name: 'ResearchSurveyAnswer',
   data() {
     return {
-      surveyInfo: {
-        surveyTitle: '测试调研信息0504',
-        coverUrl: '/profile/upload/2025/05/04/20250310_20250504161111A001.png',
-        surveyDesc: '只是一次测试',
-        createTime: '2025-05-04',
-        remark: '是的只是一次测试'
-      },
+      surveyUserId: null,
+      surveyInfo: {},
       userId: 1,
       deptId: 103,
       surveyId: 1,
-      questionList: [
-        {
-          id: '2',
-          questionType: '1',
-          questionTitle: 'AAA',
-          isRequired: '1',
-          questionOptions: [
-            { label: 'A', value: '啊啊啊' },
-            { label: 'B', value: '不不不' }
-          ],
-          questionOrder: '0'
-        },
-        {
-          id: '3',
-          questionType: '2',
-          questionTitle: '什么是什么',
-          isRequired: '0',
-          questionOptions: [],
-          questionOrder: '1'
-        },
-        {
-          id: '1',
-          questionType: '0',
-          questionTitle: '312',
-          isRequired: '1',
-          questionOptions: [
-            { label: 'A', value: '你是什么人' },
-            { label: 'B', value: '312' },
-            { label: 'C', value: '321' }
-          ],
-          questionOrder: '2'
-        }
-      ],
-      answers: [
-        { questionId: '2', answer: ['A'], questionOrder: 0 },
-        { questionId: '3', answer: '这是我写的daw答案', questionOrder: 1 },
-        { questionId: '1', answer: ['你是什么人', '321'], questionOrder: 2 }
-      ]
+      questionList: [],
+      answers: []
     }
   },
   created() {
-    // 模拟从后端返回的答案数组（你应该从接口中拿）
-    const existingAnswers = [
-      { questionId: '2', answer: ['A', 'B'], questionOrder: 0 },
-      { questionId: '3', answer: '这是我写的答案', questionOrder: 1 },
-      { questionId: '1', answer: 'A', questionOrder: 2 }
-    ]
-
-    // 将已有答案填入 answers 数组
-    existingAnswers.forEach((answer) => {
-      const answerItem = this.answers.find(
-        (ans) => ans.questionId === answer.questionId
-      )
-      if (answerItem) {
-        answerItem.answer = answer.answer
-      }
+    this.surveyUserId = this.$route.params && this.$route.params.surveyUserId
+    //查询用户调研
+    getSurveyUser(this.surveyUserId).then(response => {
+      this.getSurveyInfo(response.data.surveyId)
+      this.getQuestion(response.data.surveyId)
     })
   },
   methods: {
+    //获取题目信息
+    getQuestion(id) {
+      listSurveyQuestion({ surveyId: id }).then(response => {
+        this.questionList = response.rows
+
+        // 初始化 answers 数组
+        this.answers = this.questionList.map((q) => {
+          return {
+            questionId: q.id,
+            questionType: q.questionType,
+            answer: q.questionType === '1' ? [] : '', // 多选初始化为数组
+            id: null // 初始化为空，后续查询时赋值
+          }
+        })
+        this.getSurveyAnswer(this.surveyUserId)
+      })
+    },
+    getSurveyAnswer(id) {
+      listSurveyAnswer({ surveyUserId: id }).then(response => {
+        const existingAnswers = response.rows
+
+        existingAnswers.forEach((answer) => {
+          const answerItem = this.answers.find(
+            (ans) => ans.questionId === answer.questionId
+          )
+
+          if (!answerItem) {
+            console.warn(`找不到对应的题目，questionId=${answer.questionId}`)
+            return
+          }
+
+          answerItem.id = answer.id
+          if (answer.questionType === '1') {
+            answerItem.answer = answer.answer ? answer.answer.split(',') : []
+          } else {
+            answerItem.answer = answer.answer
+          }
+        })
+      })
+    },
+
+    //查询问卷信息
+    getSurveyInfo(id) {
+      getResearchSurvey(id).then(response => {
+        this.surveyInfo = response.data
+      })
+    },
     handleSubmit(status) {
       console.log('📝 提交数据：', status)
       // 仅在提交时校验
@@ -165,20 +166,29 @@ export default {
       }
 
       // 模拟提交数据
-      const result = this.questionList.map((q) => {
+      const resultList = this.questionList.map((q) => {
+        const answerObj = this.answers.find((ans) => ans.questionId === q.id) || {}
         const rawAnswer = this.answers.find((ans) => ans.questionId === q.id).answer
         const answer = q.questionType === '1' ? rawAnswer.join(',') : rawAnswer
         return {
+          id: answerObj.id || null, // 是否已有答案记录
           surveyId: this.surveyId,
           questionId: q.id,
           questionType: q.questionType,
           answer,
-          questionOrder: q.questionOrder
+          questionOrder: q.questionOrder,
+          submitStatus: status
         }
       })
-
+      const result = {
+        surveyUserId: this.surveyUserId,
+        surveyAnswerInserts: resultList
+      }
       console.log('📋 提交内容：', result)
-      this.$message.success(status === 1 ? '提交成功（静态）' : '草稿已保存（静态）')
+
+      addByAnswerList(result).then((res) => {
+        this.$message.success(status === 1 ? '提交成功' : '草稿已保存')
+      })
     }
   }
 }

@@ -26,6 +26,14 @@ export function addSurveyAnswer(data) {
   })
 }
 
+export function addByAnswerList(data) {
+  return request({
+    url: '/manage/surveyAnswer/add/batch',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改用户填写的完整问卷记录
 export function updateSurveyAnswer(data) {
   return request({

@@ -197,7 +197,7 @@ export const dynamicRoutes = [
     permissions: ['manage:surveyUser:list'],
     children: [
       {
-        path: 'index/:surveyId(\\d+)',
+        path: 'index/:surveyUserId(\\d+)',
         component: () => import('@/views/manage/researchSurvey/answerSurvey/index'),
         name: 'ResearchSurveyAnswer',
         meta: { title: '调研题目', activeMenu: '/scientificManage/surveyAnswer' }

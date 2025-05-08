@@ -9,22 +9,22 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="答卷" prop="surveyId">
-        <el-input
-          v-model="queryParams.surveyId"
-          placeholder="请输入答卷"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="题目" prop="questionId">
-        <el-input
-          v-model="queryParams.questionId"
-          placeholder="请输入题目"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="答卷" prop="surveyId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.surveyId"-->
+      <!--          placeholder="请输入答卷"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="题目" prop="questionId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.questionId"-->
+      <!--          placeholder="请输入题目"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="题目类型" prop="questionType">
         <el-select v-model="queryParams.questionType" placeholder="请选择题目类型" clearable>
           <el-option
@@ -35,30 +35,30 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="用户" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="部门" prop="deptId">
-        <el-input
-          v-model="queryParams.deptId"
-          placeholder="请输入部门"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="题目顺序" prop="questionOrder">
-        <el-input
-          v-model="queryParams.questionOrder"
-          placeholder="请输入题目顺序"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="用户" prop="userId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.userId"-->
+<!--          placeholder="请输入用户"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <!--      <el-form-item label="部门" prop="deptId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.deptId"-->
+      <!--          placeholder="请输入部门"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="题目顺序" prop="questionOrder">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.questionOrder"-->
+      <!--          placeholder="请输入题目顺序"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="daterangeCreateTime"
@@ -98,29 +98,29 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['manage:surveyAnswer:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manage:surveyAnswer:edit']"
-        >修改
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-plus"-->
+      <!--          size="mini"-->
+      <!--          @click="handleAdd"-->
+      <!--          v-hasPermi="['manage:surveyAnswer:add']"-->
+      <!--        >新增-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="success"-->
+      <!--          plain-->
+      <!--          icon="el-icon-edit"-->
+      <!--          size="mini"-->
+      <!--          :disabled="single"-->
+      <!--          @click="handleUpdate"-->
+      <!--          v-hasPermi="['manage:surveyAnswer:edit']"-->
+      <!--        >修改-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -151,10 +151,10 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
       <el-table-column label="答卷" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
-                       prop="surveyId"
+                       prop="surveyName"
       />
       <el-table-column label="题目" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible"
-                       prop="questionId"
+                       prop="questionName"
       />
       <el-table-column label="题目类型" align="center" v-if="columns[3].visible" prop="questionType">
         <template slot-scope="scope">
@@ -165,10 +165,10 @@
                        prop="answer"
       />
       <el-table-column label="用户" :show-overflow-tooltip="true" align="center" v-if="columns[5].visible"
-                       prop="userId"
+                       prop="userName"
       />
       <el-table-column label="部门" :show-overflow-tooltip="true" align="center" v-if="columns[6].visible"
-                       prop="deptId"
+                       prop="deptName"
       />
       <el-table-column label="题目顺序" :show-overflow-tooltip="true" align="center" v-if="columns[7].visible"
                        prop="questionOrder"
@@ -188,16 +188,18 @@
           <dict-tag :options="dict.type.answer_submit_status" :value="scope.row.submitStatus"/>
         </template>
       </el-table-column>
+      <el-table-column label="提交状态" align="center" v-if="columns[11].visible" prop="surveyUserId"/>
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['manage:surveyAnswer:edit']"
-          >修改
-          </el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['manage:surveyAnswer:edit']"-->
+<!--          >修改-->
+<!--          </el-button>-->
           <el-button
             size="mini"
             type="text"
@@ -284,17 +286,18 @@ export default {
     return {
       //表格展示列
       columns: [
-        { key: 0, label: '编号', visible: true },
+        { key: 0, label: '编号', visible: false },
         { key: 1, label: '答卷', visible: true },
         { key: 2, label: '题目', visible: true },
         { key: 3, label: '题目类型', visible: true },
         { key: 4, label: '答案', visible: true },
         { key: 5, label: '用户', visible: true },
-        { key: 6, label: '部门', visible: true },
-        { key: 7, label: '题目顺序', visible: true },
-        { key: 8, label: '创建时间', visible: true },
+        { key: 6, label: '部门', visible: false },
+        { key: 7, label: '题目顺序', visible: false },
+        { key: 8, label: '创建时间', visible: false },
         { key: 9, label: '提交时间', visible: true },
-        { key: 10, label: '提交状态', visible: true }
+        { key: 10, label: '提交状态', visible: true },
+        { key: 11, label: '用户调研', visible: false }
       ],
       // 遮罩层
       loading: true,

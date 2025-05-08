@@ -33,6 +33,9 @@ public class SurveyAnswerEdit implements Serializable {
      */
     private Long questionId;
 
+    private Long surveyUserId;
+
+
     /**
      * 题目类型
      */

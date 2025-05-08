@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.lz.common.annotation.DataScope;
+import com.lz.common.core.domain.entity.SysDept;
+import com.lz.common.core.domain.entity.SysUser;
+import com.lz.common.exception.ServiceException;
 import com.lz.common.utils.StringUtils;
 
 import java.util.Date;
@@ -16,6 +19,16 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
+import com.lz.manage.model.domain.ResearchSurvey;
+import com.lz.manage.model.domain.SurveyQuestion;
+import com.lz.manage.model.domain.SurveyUser;
+import com.lz.manage.model.dto.surveyAnswer.SurveyAnswerInsert;
+import com.lz.manage.model.dto.surveyAnswer.SurveyAnswerRequest;
+import com.lz.manage.service.IResearchSurveyService;
+import com.lz.manage.service.ISurveyQuestionService;
+import com.lz.manage.service.ISurveyUserService;
+import com.lz.system.service.ISysDeptService;
+import com.lz.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -35,6 +48,21 @@ import com.lz.manage.model.vo.surveyAnswer.SurveyAnswerVo;
 public class SurveyAnswerServiceImpl extends ServiceImpl<SurveyAnswerMapper, SurveyAnswer> implements ISurveyAnswerService {
     @Resource
     private SurveyAnswerMapper surveyAnswerMapper;
+
+    @Resource
+    private IResearchSurveyService researchSurveyService;
+
+    @Resource
+    private ISurveyUserService surveyUserService;
+
+    @Resource
+    private ISurveyQuestionService surveyQuestionService;
+
+    @Resource
+    private ISysUserService userService;
+
+    @Resource
+    private ISysDeptService deptService;
 
     //region mybatis代码
 
@@ -58,7 +86,26 @@ public class SurveyAnswerServiceImpl extends ServiceImpl<SurveyAnswerMapper, Sur
     @DataScope(userAlias = "tb_survey_answer", deptAlias = "tb_survey_answer")
     @Override
     public List<SurveyAnswer> selectSurveyAnswerList(SurveyAnswer surveyAnswer) {
-        return surveyAnswerMapper.selectSurveyAnswerList(surveyAnswer);
+        List<SurveyAnswer> surveyAnswers = surveyAnswerMapper.selectSurveyAnswerList(surveyAnswer);
+        for (SurveyAnswer info : surveyAnswers) {
+            SurveyQuestion surveyQuestion = surveyQuestionService.selectSurveyQuestionById(info.getQuestionId());
+            if (StringUtils.isNotNull(surveyQuestion)) {
+                info.setQuestionName(surveyQuestion.getQuestionTitle());
+            }
+            SysUser user = userService.selectUserById(info.getUserId());
+            if (StringUtils.isNotNull(user)) {
+                info.setUserName(user.getNickName());
+            }
+            SysDept dept = deptService.selectDeptById(info.getDeptId());
+            if (StringUtils.isNotNull(dept)) {
+                info.setDeptName(dept.getDeptName());
+            }
+            ResearchSurvey researchSurvey = researchSurveyService.selectResearchSurveyById(info.getSurveyId());
+            if (StringUtils.isNotNull(researchSurvey)) {
+                info.setSurveyName(researchSurvey.getSurveyTitle());
+            }
+        }
+        return surveyAnswers;
     }
 
     /**
@@ -154,6 +201,55 @@ public class SurveyAnswerServiceImpl extends ServiceImpl<SurveyAnswerMapper, Sur
             return Collections.emptyList();
         }
         return surveyAnswerList.stream().map(SurveyAnswerVo::objToVo).collect(Collectors.toList());
+    }
+
+    @Override
+    public int insertSurveyAnswerList(SurveyAnswerRequest surveyAnswerRequest) {
+        //判断用户是否已经提交
+        SurveyUser surveyUser = surveyUserService.selectSurveyUserById(surveyAnswerRequest.getSurveyUserId());
+        if (StringUtils.isNull(surveyUser)) {
+            throw new ServiceException("答题不存在！！！");
+        }
+        if (surveyUser.getStatus().equals("1")) {
+            throw new ServiceException("用户已经提交了问卷！！！");
+        }
+        //如果用户传过来是提交
+        List<SurveyAnswerInsert> surveyAnswerInserts = surveyAnswerRequest.getSurveyAnswerInserts();
+        List<SurveyAnswer> surveyAnswers = SurveyAnswerInsert.insertToObj(surveyAnswerInserts);
+        if (StringUtils.isEmpty(surveyAnswers)) {
+            throw new ServiceException("请填写问卷！！！");
+        }
+
+        SurveyAnswer surveyAnswer = surveyAnswers.get(0);
+        //校验是否有必填的题没有填
+        for (SurveyAnswer info : surveyAnswers) {
+            SurveyQuestion surveyQuestion = surveyQuestionService.selectSurveyQuestionById(info.getQuestionId());
+            if (StringUtils.isNull(surveyQuestion)) {
+                throw new ServiceException("题目不存在！！！");
+            }
+            if (info.getSubmitStatus().equals("1") && surveyQuestion.getIsRequired().equals("1") && StringUtils.isEmpty(info.getAnswer())) {
+                throw new ServiceException("题目" + surveyQuestion.getQuestionTitle() + "为必填项！！！");
+            }
+            if (info.getSubmitStatus().equals("1")) {
+                info.setSubmitTime(DateUtils.getNowDate());
+            }
+            if (StringUtils.isNull(info.getId())) {
+                info.setCreateTime(DateUtils.getNowDate());
+            }
+            info.setSurveyUserId(surveyAnswerRequest.getSurveyUserId());
+            info.setSurveyId(surveyQuestion.getSurveyId());
+            info.setQuestionType(surveyQuestion.getQuestionType());
+            info.setQuestionOrder(surveyQuestion.getQuestionOrder());
+            info.setDeptId(surveyUser.getDeptId());
+            info.setUserId(surveyUser.getUserId());
+        }
+        if (surveyAnswer.getSubmitStatus().equals("1")) {
+            //更新用户答题状态
+            surveyUser.setSubmitTime(DateUtils.getNowDate());
+            surveyUser.setStatus("1");
+            surveyUserService.updateSurveyUser(surveyUser);
+        }
+        return this.saveOrUpdateBatch(surveyAnswers) ? 1 : 0;
     }
 
 }
