@@ -56,15 +56,17 @@ export default {
     }
   },
   created() {
-    loginCountDay().then(response => {
-      this.loginCount = response.data
-    })
-    userSexPie().then(response => {
-      this.userSexCount = response.data.datas
-    })
-    userAge().then(response => {
-      this.userAgeCount = response.data
-    })
+    if (checkPermi(['manage:statics'])) {
+      loginCountDay().then(response => {
+        this.loginCount = response.data
+      })
+      userSexPie().then(response => {
+        this.userSexCount = response.data.datas
+      })
+      userAge().then(response => {
+        this.userAgeCount = response.data
+      })
+    }
   },
   methods: {
     checkPermi,

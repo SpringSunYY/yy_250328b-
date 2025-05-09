@@ -77,7 +77,7 @@
 import { addByAnswerList, getSurveyAnswer, listSurveyAnswer } from '@/api/manage/surveyAnswer'
 import { getSurveyUser } from '@/api/manage/surveyUser'
 import { getResearchSurvey } from '@/api/manage/researchSurvey'
-import { listSurveyQuestion } from '@/api/manage/surveyQuestion'
+import { questionList } from '@/api/manage/surveyQuestion'
 
 export default {
   name: 'ResearchSurveyAnswer',
@@ -103,7 +103,7 @@ export default {
   methods: {
     //获取题目信息
     getQuestion(id) {
-      listSurveyQuestion({ surveyId: id }).then(response => {
+      questionList({ surveyId: id }).then(response => {
         this.questionList = response.rows
 
         // 初始化 answers 数组

@@ -79,4 +79,6 @@ public interface ISurveyQuestionService extends IService<SurveyQuestion>
      * @return SurveyQuestionVO集合
      */
     List<SurveyQuestionVo> convertVoList(List<SurveyQuestion> surveyQuestionList);
+
+    List<SurveyQuestion> questionList(SurveyQuestion surveyQuestion);
 }

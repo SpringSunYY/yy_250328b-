@@ -110,7 +110,11 @@ public class SurveyUserServiceImpl extends ServiceImpl<SurveyUserMapper, SurveyU
         if (StringUtils.isNull(researchSurvey)) {
             throw new ServiceException("问卷不存在！！！");
         }
-        surveyUser.setDeptId(researchSurvey.getUserId());
+        //如果问卷关闭
+        if (researchSurvey.getStatus().equals("1")) {
+            throw new ServiceException("问卷已关闭！！！");
+        }
+        surveyUser.setDeptId(researchSurvey.getDeptId());
         //查询用户是否存在
         SysUser user = userService.selectUserById(surveyUser.getUserId());
         if (StringUtils.isNull(user)) {
@@ -146,7 +150,7 @@ public class SurveyUserServiceImpl extends ServiceImpl<SurveyUserMapper, SurveyU
             throw new ServiceException("开始时间小于结束时间！！！");
         }
         //获取数据库内容
-        SurveyUser surveyUserDb = surveyUserMapper.selectSurveyUserById(surveyUser.getSurveyId());
+        SurveyUser surveyUserDb = surveyUserMapper.selectSurveyUserById(surveyUser.getId());
         if (StringUtils.isNull(surveyUserDb)) {
             throw new ServiceException("数据不存在！！！");
         }

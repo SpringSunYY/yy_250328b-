@@ -42,7 +42,7 @@ public class SurveyQuestionController extends BaseController
     /**
      * 查询调研题目列表
      */
-    @PreAuthorize("@ss.hasPermi('manage:surveyQuestion:list')")
+    @PreAuthorize("@ss.hasAnyPermi('manage:surveyQuestion:list,manage:surveyQuestion:query')")
     @GetMapping("/list")
     public TableDataInfo list(SurveyQuestionQuery surveyQuestionQuery)
     {
@@ -50,6 +50,18 @@ public class SurveyQuestionController extends BaseController
         startPage();
         List<SurveyQuestion> list = surveyQuestionService.selectSurveyQuestionList(surveyQuestion);
         List<SurveyQuestionVo> listVo= list.stream().map(SurveyQuestionVo::objToVo).collect(Collectors.toList());
+        TableDataInfo table = getDataTable(list);
+        table.setRows(listVo);
+        return table;
+    }
+
+    @PreAuthorize("@ss.hasAnyPermi('manage:surveyQuestion:list,manage:surveyQuestion:query')")
+    @GetMapping("/questionList")
+    public TableDataInfo questionList(SurveyQuestionQuery surveyQuestionQuery) {
+        SurveyQuestion surveyQuestion = SurveyQuestionQuery.queryToObj(surveyQuestionQuery);
+        startPage();
+        List<SurveyQuestion> list = surveyQuestionService.questionList(surveyQuestion);
+        List<SurveyQuestionVo> listVo = list.stream().map(SurveyQuestionVo::objToVo).collect(Collectors.toList());
         TableDataInfo table = getDataTable(list);
         table.setRows(listVo);
         return table;

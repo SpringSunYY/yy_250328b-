@@ -19,22 +19,16 @@ import com.lz.common.utils.DateUtils;
 
 import javax.annotation.Resource;
 
-import com.lz.manage.model.domain.ResearchSurvey;
-import com.lz.manage.model.domain.SurveyQuestion;
-import com.lz.manage.model.domain.SurveyUser;
+import com.lz.manage.model.domain.*;
 import com.lz.manage.model.dto.surveyAnswer.SurveyAnswerInsert;
 import com.lz.manage.model.dto.surveyAnswer.SurveyAnswerRequest;
-import com.lz.manage.service.IResearchSurveyService;
-import com.lz.manage.service.ISurveyQuestionService;
-import com.lz.manage.service.ISurveyUserService;
+import com.lz.manage.service.*;
 import com.lz.system.service.ISysDeptService;
 import com.lz.system.service.ISysUserService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.SurveyAnswerMapper;
-import com.lz.manage.model.domain.SurveyAnswer;
-import com.lz.manage.service.ISurveyAnswerService;
 import com.lz.manage.model.dto.surveyAnswer.SurveyAnswerQuery;
 import com.lz.manage.model.vo.surveyAnswer.SurveyAnswerVo;
 
@@ -63,6 +57,9 @@ public class SurveyAnswerServiceImpl extends ServiceImpl<SurveyAnswerMapper, Sur
 
     @Resource
     private ISysDeptService deptService;
+
+    @Resource
+    private IRemindHistoryService remindHistoryService;
 
     //region mybatis代码
 
@@ -213,6 +210,10 @@ public class SurveyAnswerServiceImpl extends ServiceImpl<SurveyAnswerMapper, Sur
         if (surveyUser.getStatus().equals("1")) {
             throw new ServiceException("用户已经提交了问卷！！！");
         }
+        //如果时间超过结束时间
+        if (surveyUser.getEndTime().before(new Date())) {
+            throw new ServiceException("答题时间已结束！！！");
+        }
         //如果用户传过来是提交
         List<SurveyAnswerInsert> surveyAnswerInserts = surveyAnswerRequest.getSurveyAnswerInserts();
         List<SurveyAnswer> surveyAnswers = SurveyAnswerInsert.insertToObj(surveyAnswerInserts);
@@ -248,6 +249,15 @@ public class SurveyAnswerServiceImpl extends ServiceImpl<SurveyAnswerMapper, Sur
             surveyUser.setSubmitTime(DateUtils.getNowDate());
             surveyUser.setStatus("1");
             surveyUserService.updateSurveyUser(surveyUser);
+
+            //发送消息给创建人
+            RemindHistory remindHistory = new RemindHistory();
+            remindHistory.setUserId(userService.selectUserByUserName(surveyUser.getCreateBy()).getUserId());
+            remindHistory.setDeptId(surveyUser.getDeptId());
+            remindHistory.setContent(StringUtils.format("用户{}已经填写问卷{}，请立即查看！！！",
+                    userService.selectUserById(surveyUser.getUserId()).getUserName(),
+                    surveyQuestionService.selectSurveyQuestionById(surveyUser.getSurveyId()).getQuestionTitle()));
+            remindHistoryService.insertRemindHistory(remindHistory);
         }
         return this.saveOrUpdateBatch(surveyAnswers) ? 1 : 0;
     }

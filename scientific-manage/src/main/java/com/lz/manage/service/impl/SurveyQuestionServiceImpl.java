@@ -196,4 +196,24 @@ public class SurveyQuestionServiceImpl extends ServiceImpl<SurveyQuestionMapper,
         return surveyQuestionList.stream().map(SurveyQuestionVo::objToVo).collect(Collectors.toList());
     }
 
+    @Override
+    public List<SurveyQuestion> questionList(SurveyQuestion surveyQuestion) {
+        List<SurveyQuestion> surveyQuestions = surveyQuestionMapper.selectSurveyQuestionList(surveyQuestion);
+        for (SurveyQuestion info : surveyQuestions) {
+            SysUser user = userService.selectUserById(info.getUserId());
+            if (StringUtils.isNotNull(user)) {
+                info.setUserName(user.getNickName());
+            }
+            SysDept dept = deptService.selectDeptById(info.getDeptId());
+            if (StringUtils.isNotNull(dept)) {
+                info.setDeptName(dept.getDeptName());
+            }
+            ResearchSurvey researchSurvey = researchSurveyService.selectResearchSurveyById(info.getSurveyId());
+            if (StringUtils.isNotNull(researchSurvey)) {
+                info.setSurveyName(researchSurvey.getSurveyTitle());
+            }
+        }
+        return surveyQuestions;
+    }
+
 }

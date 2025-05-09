@@ -9,6 +9,14 @@ export function listSurveyQuestion(query) {
   })
 }
 
+export function questionList(query) {
+  return request({
+    url: '/manage/surveyQuestion/questionList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询调研题目详细
 export function getSurveyQuestion(id) {
   return request({
